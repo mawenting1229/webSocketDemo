@@ -51,12 +51,8 @@
                     }
                 })
                 sock.on('message2', (name, txt) => {
-                    console.log('other msg1');
                     let oLi = document.createElement('li');
-                    console.log('other msg2');
                     oLi.innerHTML = `<h4>${name}</h4><p>${txt}</p>`;
-                    console.log('other msg3');
-                    console.log(oLi);
                     oUl1.appendChild(oLi);
                 })
 

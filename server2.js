@@ -106,18 +106,13 @@ wsServer.on('connection', sock => {
     })
     //发言
     sock.on('message', (txt) => {
-        console.log(txt);
         if(!txt) {
             sock.emit('message_ret', 1, '消息不能为空');
         }else{
             //广播给所有人
             aSock.forEach(item => {
-                if(item == sock) {
-                    console.log('myself sock')
-                }else{
-                    console.log(current_username, txt);
-                    sock.emit('message2', current_username, txt);
-                }
+                if(item == sock) return;
+                sock.emit('message2', current_username, txt);
 
             })
             sock.emit('message_ret', 0, '消息广播成功');
