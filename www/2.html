@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .mine{
+            background: green
+        }
+    </style>
+</head>
+<body>
+    <script src="node_modules/socket.io-client/dist/socket.io.js" charset="utf-8"></script>
+    <script>
+        let sock = io.connect('ws://localhost:8080')
+            window.onload = function() {
+                let current_username = '';
+                let oBtn1 = document.getElementById('btn1');
+                let oBtn2 = document.getElementById('btn2');
+                let oBtn3 = document.getElementById('btn3');
+                let oUser = document.getElementById('user');
+                let oPass = document.getElementById('pass');
+                let oTxt1 = document.getElementById('txt1');
+                let oUl1 = document.getElementById('ul1');
+
+                sock.on('reg_ret', (code, msg) => {
+                    if(code) {
+                        alert('注册失败，'+msg)
+                    }else{
+                        alert('注册成功')
+                    }
+                })
+                sock.on('login_ret', (code, msg) => {
+                    if(code) {
+                        alert('登录失败，'+msg)
+                    }else{
+                        alert('登录成功')
+                        current_username = oUser.value;
+                    }
+                })
+                sock.on('message_ret', (code, msg) => {
+                    if(code) {
+                        alert('发送失败，'+msg)
+                    }else{
+                        //alert('发送成功');
+                        let oLi = document.createElement('li');
+                        oLi.className = 'mine';
+                        oLi.innerHTML = `<h4>${current_username}</h4><p>${oTxt1.value}</p>`;
+                        oUl1.appendChild(oLi);
+                        oTxt1.value = '';
+                    }
+                })
+                sock.on('message2', (name, txt) => {
+                    console.log('other msg1');
+                    let oLi = document.createElement('li');
+                    console.log('other msg2');
+                    oLi.innerHTML = `<h4>${name}</h4><p>${txt}</p>`;
+                    console.log('other msg3');
+                    console.log(oLi);
+                    oUl1.appendChild(oLi);
+                })
+
+                oBtn1.onclick = function() {
+                    sock.emit('reg', oUser.value, oPass.value);
+                }
+                oBtn2.onclick = function() {
+                    sock.emit('login', oUser.value, oPass.value);
+                }
+                oBtn3.onclick = function() {
+                    sock.emit('message', oTxt1.value);
+                }
+            }
+    </script>
+    用户名：<input type="text" id="user"><br>
+    密码：<input type="text" id="pass"><br>
+    <input type="button" value="注册" id="btn1">
+    <input type="button" value="登录" id="btn2">
+    <hr>
+    <textarea id="txt1" cols="30" rows="10"></textarea>
+    <input type="button" value="发送" id="btn3"><br>
+    <ul id="ul1">
+        <!-- <li>
+            <h4></h4>
+            <p></p>
+        </li> -->
+    </ul>
+
+</body>
+</html>
